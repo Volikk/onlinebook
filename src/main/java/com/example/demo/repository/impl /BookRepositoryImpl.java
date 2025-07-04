@@ -45,7 +45,7 @@ public class BookRepositoryImpl implements BookRepository {
         try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
             return entityManager.createQuery("from Book", Book.class).getResultList();
         } catch (RuntimeException e) {
-            throw new DataProcessingException("All books were not found", e);
+            throw new DataProcessingException("Can't find all book", e);
         }
     }
 
@@ -57,7 +57,7 @@ public class BookRepositoryImpl implements BookRepository {
                             .setParameter("id", id)
                             .getSingleResult());
         } catch (RuntimeException e) {
-            throw new DataProcessingException("All books were not found", e);
+            throw new DataProcessingException("Can't find book by id: " + id, e);
         }
     }
 }

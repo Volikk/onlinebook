@@ -13,14 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
-@RequestMapping("/books")
+@RequestMapping("/api/books")
 public class BookController {
     private final BookService bookService;
 
-    @GetMapping
-    public List<BookDto> getAll() {
-        return bookService.getAll();
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
     }
 
     @GetMapping("/{id}")
@@ -29,7 +27,8 @@ public class BookController {
     }
 
     @PostMapping
-    public BookDto createBook(@RequestBody CreateBookRequestDto requestBook) {
-        return bookService.createBook(requestBook);
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookDto createBook(@RequestBody CreateBookRequestDto bookDto) {
+        return bookService.createBook(bookDto);
     }
 }
