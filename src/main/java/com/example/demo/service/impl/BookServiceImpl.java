@@ -44,22 +44,15 @@ public class BookServiceImpl implements BookService {
         Book existingBook = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
 
-        existingBook.setTitle(updateRequest.getTitle());
-        existingBook.setAuthor(updateRequest.getAuthor());
-        existingBook.setIsbn(updateRequest.getIsbn());
-        existingBook.setPrice(updateRequest.getPrice());
-        existingBook.setDescription(updateRequest.getDescription());
-        existingBook.setCoverImage(updateRequest.getCoverImage());
+        bookMapper.updateBookFromDto(updateRequest, existingBook);
 
-        Book updatedBook = bookRepository.save(existingBook);
-        return bookMapper.toDto(updatedBook);
+        bookRepository.save(existingBook);
+        return bookMapper.toDto(existingBook);
     }
 
     @Override
     public void softDeleteBook(Long id) {
         Book book = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
-        book.setDeleted(true);
-        bookRepository.save(book);
     }
 }
