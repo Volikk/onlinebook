@@ -20,8 +20,8 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto createBook(CreateBookRequestDto requestBook) {
         Book book = bookMapper.toModel(requestBook);
-        Book savedBook = bookRepository.save(book);
-        return bookMapper.toDto(savedBook);
+        bookRepository.save(book);
+        return bookMapper.toDto(book);
     }
 
     @Override
@@ -51,8 +51,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void softDeleteBook(Long id) {
-        Book book = bookRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
+        if (!bookRepository.existsById(id)) {
+            throw new EntityNotFoundException("Book not found with id: " + id);
+        }
+        bookRepository.deleteById(id); // Hibernate замінить на UPDATE через @SQLDelete
     }
 }
