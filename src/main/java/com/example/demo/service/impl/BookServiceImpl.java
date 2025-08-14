@@ -56,6 +56,6 @@ public class BookServiceImpl implements BookService {
         if (!bookRepository.existsById(id)) {
             throw new EntityNotFoundException("Book not found with id: " + id);
         }
-        bookRepository.deleteById(id); // Hibernate замінить на UPDATE через @SQLDelete
+        bookRepository.deleteById(id);
     }
 }
