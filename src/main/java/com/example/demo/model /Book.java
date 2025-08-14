@@ -16,13 +16,12 @@ import org.hibernate.annotations.SQLRestriction;
 @Table(name = "books")
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
+@SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id = ?")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private String title;
 
@@ -36,6 +35,7 @@ public class Book {
     private BigDecimal price;
 
     private String description;
+
     private String coverImage;
 
     @Column(nullable = false)

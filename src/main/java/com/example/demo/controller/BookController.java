@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.BookDto;
 import com.example.demo.dto.CreateBookRequestDto;
+import com.example.demo.dto.UpdateBookRequestDto;
 import com.example.demo.service.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,36 +17,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/books")
-@RequiredArgsConstructor
 public class BookController {
+
     private final BookService bookService;
 
     @GetMapping
-    public List<BookDto> getAllBooks() {
-        return bookService.getAll();
+    public List<BookDto> getAll() {
+        return bookService.findAll();
     }
 
     @GetMapping("/{id}")
     public BookDto getBookById(@PathVariable Long id) {
-        return bookService.getBookById(id);
+        return bookService.findById(id);
     }
 
-    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookDto createBook(@RequestBody CreateBookRequestDto request) {
-        return bookService.createBook(request);
+    @PostMapping
+    public BookDto createBook(@RequestBody CreateBookRequestDto requestDto) {
+        return bookService.save(requestDto);
     }
 
     @PutMapping("/{id}")
-    public BookDto updateBook(@PathVariable Long id, @RequestBody CreateBookRequestDto request) {
-        return bookService.updateBook(id, request);
+    public BookDto updateBook(
+            @PathVariable Long id,
+            @RequestBody UpdateBookRequestDto requestDto) {
+        return bookService.update(id, requestDto);
     }
 
-    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBook(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public void deleteBookById(@PathVariable Long id) {
         bookService.delete(id);
     }
 }

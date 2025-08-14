@@ -3,17 +3,21 @@ package com.example.demo.mapper;
 import com.example.demo.config.MapperConfig;
 import com.example.demo.dto.BookDto;
 import com.example.demo.dto.CreateBookRequestDto;
+import com.example.demo.dto.UpdateBookRequestDto;
 import com.example.demo.model.Book;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(config = MapperConfig.class, componentModel = "spring")
+@Mapper(config = MapperConfig.class,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface BookMapper {
+
     BookDto toDto(Book book);
 
     Book toModel(CreateBookRequestDto createBookRequestDto);
 
-    @Mapping(target = "id", ignore = true) // не оновлюємо id
-    void updateBookFromDto(CreateBookRequestDto dto, @MappingTarget Book book);
+    void updateModel(
+            UpdateBookRequestDto updateBookRequestDto,
+            @MappingTarget Book book);
 }
