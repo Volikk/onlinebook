@@ -10,23 +10,26 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
+
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
 
     @Override
     public BookDto createBook(CreateBookRequestDto requestBook) {
         Book book = bookMapper.toModel(requestBook);
+        book.setDeleted(false);
         bookRepository.save(book);
         return bookMapper.toDto(book);
     }
 
     @Override
     public List<BookDto> getAll() {
-        return bookRepository.findAll()
+        return bookRepository.findAllByDeletedFalse()
                 .stream()
                 .map(bookMapper::toDto)
                 .toList();
@@ -34,12 +37,13 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto getBookById(Long id) {
-        Book book = bookRepository.findById(id)
+        Book book = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
         return bookMapper.toDto(book);
     }
 
     @Override
+    @Transactional
     public BookDto updateBook(Long id, CreateBookRequestDto updateRequest) {
         Book existingBook = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
@@ -52,10 +56,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void softDeleteBook(Long id) {
-        if (!bookRepository.existsById(id)) {
-            throw new EntityNotFoundException("Book not found with id: " + id);
-        }
-        bookRepository.deleteById(id);
+    public void delete(Long id) {
+        Book book = bookRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
+        book.setDeleted(true);
+        bookRepository.save(book);
     }
 }

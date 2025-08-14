@@ -2,7 +2,7 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.exception.DataProcessingException;
 import com.example.demo.model.Book;
-import com.example.demo.repository.BookRepository;
+import com.example.demo.repository.BookRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class BookRepositoryImpl implements BookRepository {
+public class BookRepositoryCustomImpl implements BookRepositoryCustom {
 
     private final EntityManagerFactory entityManagerFactory;
 
@@ -32,7 +32,7 @@ public class BookRepositoryImpl implements BookRepository {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            throw new DataProcessingException("Can't save book: " + book, e);
+            throw new DataProcessingException("Не вдалося зберегти книгу: " + book, e);
         } finally {
             if (entityManager != null) {
                 entityManager.close();
@@ -45,7 +45,7 @@ public class BookRepositoryImpl implements BookRepository {
         try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
             return entityManager.createQuery("from Book", Book.class).getResultList();
         } catch (RuntimeException e) {
-            throw new DataProcessingException("Can't find all book", e);
+            throw new DataProcessingException("Не вдалося знайти книги", e);
         }
     }
 
@@ -57,7 +57,7 @@ public class BookRepositoryImpl implements BookRepository {
                             .setParameter("id", id)
                             .getSingleResult());
         } catch (RuntimeException e) {
-            throw new DataProcessingException("Can't find book by id: " + id, e);
+            throw new DataProcessingException("Не вдалося знайти книгу за id: " + id, e);
         }
     }
 }
