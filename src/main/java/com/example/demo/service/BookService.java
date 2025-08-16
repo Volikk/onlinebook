@@ -2,12 +2,17 @@ package com.example.demo.service;
 
 import com.example.demo.dto.BookDto;
 import com.example.demo.dto.CreateBookRequestDto;
+import com.example.demo.dto.UpdateBookRequestDto;
 import java.util.List;
 
 public interface BookService {
-    BookDto createBook(CreateBookRequestDto requestBook);
+    BookDto save(CreateBookRequestDto requestDto);
 
-    List<BookDto> getAll();
+    BookDto update(Long id, UpdateBookRequestDto requestDto);
 
-    BookDto getBookById(Long id);
+    List<BookDto> findAll();
+
+    BookDto findById(Long id);
+
+    void delete(Long id);
 }
