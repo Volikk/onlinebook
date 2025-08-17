@@ -1,12 +1,14 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.BookDto;
+import com.example.demo.dto.BookSearchParametersDto;
 import com.example.demo.dto.CreateBookRequestDto;
 import com.example.demo.dto.UpdateBookRequestDto;
 import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.mapper.BookMapper;
 import com.example.demo.model.Book;
 import com.example.demo.repository.BookRepository;
+import com.example.demo.repository.spec.BookSpecification;
 import com.example.demo.service.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -53,4 +55,13 @@ public class BookServiceImpl implements BookService {
             bookRepository.deleteById(id);
         }
     }
+
+    @Override
+    public List<BookDto> searchBooks(BookSearchParametersDto params) {
+        return bookRepository.findAll(BookSpecification.withSearchParams(params))
+                .stream()
+                .map(bookMapper::toDto)
+                .toList();
+    }
+
 }
