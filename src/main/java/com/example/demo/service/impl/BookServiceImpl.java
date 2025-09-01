@@ -18,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final BookSpecificationBuilder bookSpecificationBuilder;
 
     @Override
-    @Transactional
     public BookDto save(CreateBookRequestDto requestDto) {
         Book book = bookMapper.toModel(requestDto);
         return bookMapper.toDto(bookRepository.save(book));
@@ -47,17 +47,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional
     public BookDto update(Long id, UpdateBookRequestDto requestDto) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
         bookMapper.updateFromDto(book, requestDto);
-        bookRepository.save(book);
-        return bookMapper.toDto(book);
+        return bookMapper.toDto(bookRepository.save(book));
     }
 
     @Override
-    @Transactional
     public void delete(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new EntityNotFoundException("Book not found with id: " + id);
