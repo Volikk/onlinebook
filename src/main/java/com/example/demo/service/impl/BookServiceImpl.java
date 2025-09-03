@@ -10,8 +10,9 @@ import com.example.demo.model.Book;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.book.impl.BookSpecificationBuilder;
 import com.example.demo.service.BookService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,10 +33,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookDto> findAll() {
-        return bookRepository.findAll().stream()
-                .map(bookMapper::toDto)
-                .toList();
+    public Page<BookDto> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable)
+                .map(bookMapper::toDto);
     }
 
     @Override
@@ -64,10 +64,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookDto> searchBooks(BookSearchParametersDto requestDto) {
+    public Page<BookDto> searchBooks(BookSearchParametersDto requestDto, Pageable pageable) {
         Specification<Book> spec = bookSpecificationBuilder.build(requestDto);
-        return bookRepository.findAll(spec).stream()
-                .map(bookMapper::toDto)
-                .toList();
+        return bookRepository.findAll(spec, pageable)
+                .map(bookMapper::toDto);
     }
 }
