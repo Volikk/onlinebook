@@ -4,14 +4,10 @@ import com.example.demo.dto.UserRegistrationRequestDto;
 import com.example.demo.dto.UserResponseDto;
 import com.example.demo.entity.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-
     User toUser(UserRegistrationRequestDto dto);
 
     UserResponseDto toUserResponse(User user);
 }
-
