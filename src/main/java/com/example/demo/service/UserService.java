@@ -18,14 +18,13 @@ public class UserService {
 
     public UserResponseDto register(UserRegistrationRequestDto requestDto)
             throws RegistrationException {
-        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
-            throw new RegistrationException("Email already exists");
+
+        if (userRepository.existsByEmail(requestDto.getEmail())) { // 👈 чистіша перевірка
+            throw new RegistrationException("Email already exists: " + requestDto.getEmail());
         }
 
         User user = userMapper.toUser(requestDto);
         User savedUser = userRepository.save(user);
-
         return userMapper.toUserResponse(savedUser);
     }
 }
-
