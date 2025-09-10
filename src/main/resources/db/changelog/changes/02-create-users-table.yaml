@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 01-create-books-table
+      id: 02-create-users-table
       author: Volikkk
       changes:
         - createTable:
-            tableName: books
+            tableName: users
             columns:
               - column:
                   name: id
@@ -12,36 +12,28 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-              - column:
-                  name: title
-                  type: VARCHAR(255)
-                  constraints:
                     nullable: false
               - column:
-                  name: author
+                  name: email
                   type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: isbn
-                  type: VARCHAR(20)
                   constraints:
                     nullable: false
                     unique: true
               - column:
-                  name: price
-                  type: DECIMAL(10,2)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: description
+                  name: password
                   type: VARCHAR(255)
-              - column:
-                  name: cover_image
-                  type: VARCHAR(500)
-              - column:
-                  name: is_deleted
-                  type: BIT(1)
-                  defaultValueBoolean: false
                   constraints:
                     nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: shipping_address
+                  type: VARCHAR(512)
