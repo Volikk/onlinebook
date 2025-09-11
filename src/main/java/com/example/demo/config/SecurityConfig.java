@@ -6,8 +6,8 @@ import com.example.demo.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,14 +28,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
@@ -50,8 +42,10 @@ public class SecurityConfig {
                                 antMatcher("/swagger-ui/**"),
                                 antMatcher("/v3/api-docs/**"))
                         .permitAll()
-                        .requestMatchers("/api/books/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/admin/**", "/api/books/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/books/**")
+                        .hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/books/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .httpBasic();
