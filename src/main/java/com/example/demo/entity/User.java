@@ -38,10 +38,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(name = "shipping_address")
     private String shippingAddress;
 
-    @Column(name = "is_deleted", nullable = false)
+    @Column(nullable = false)
     private boolean isDeleted = false;
 
     @ManyToMany
