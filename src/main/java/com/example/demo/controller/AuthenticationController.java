@@ -49,11 +49,7 @@ public class AuthenticationController {
     public ResponseEntity<UserLoginResponseDto> login(
             @Valid @RequestBody UserLoginRequestDto requestDto
     ) {
-        String token = authenticationService.authenticate(
-                requestDto.getEmail(),
-                requestDto.getPassword()
-        );
-        UserLoginResponseDto response = new UserLoginResponseDto(token);
+        UserLoginResponseDto response = authenticationService.authenticate(requestDto);
         return ResponseEntity.ok(response);
     }
 }
