@@ -1,7 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.UserLoginRequestDto;
+import com.example.demo.dto.UserLoginResponseDto;
 import com.example.demo.dto.UserRegistrationRequestDto;
 import com.example.demo.dto.UserResponseDto;
+import com.example.demo.service.AuthenticationService;
 import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
         description = "Endpoints for user authentication and registration"
 )
 public class AuthenticationController {
+
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/registration")
     @Operation(
@@ -34,5 +39,17 @@ public class AuthenticationController {
     ) {
         UserResponseDto response = userService.register(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/login")
+    @Operation(
+            summary = "User login",
+            description = "Authenticates user and returns JWT token"
+    )
+    public ResponseEntity<UserLoginResponseDto> login(
+            @Valid @RequestBody UserLoginRequestDto requestDto
+    ) {
+        UserLoginResponseDto response = authenticationService.authenticate(requestDto);
+        return ResponseEntity.ok(response);
     }
 }
