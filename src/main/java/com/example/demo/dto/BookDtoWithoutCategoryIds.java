@@ -1,17 +1,17 @@
 package com.example.demo.dto;
 
-import java.math.BigDecimal;
-import java.util.Set;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class BookDto {
+@AllArgsConstructor
+@NoArgsConstructor
+public class BookDtoWithoutCategoryIds {
     private Long id;
     private String title;
     private String author;
-    private BigDecimal price;
     private String isbn;
     private String description;
-    private String coverImage;
-    private Set<Long> categoryIds;
+    private Double price;
 }
