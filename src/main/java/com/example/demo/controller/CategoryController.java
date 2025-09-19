@@ -6,8 +6,8 @@ import com.example.demo.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/categories")
 @RequiredArgsConstructor
 @Tag(name = "Categories", description = "Category management and browsing")
 public class CategoryController {
@@ -37,9 +37,9 @@ public class CategoryController {
 
     @GetMapping
     @Operation(summary = "Get all categories")
-    public ResponseEntity<List<CategoryDto>> getAll(Pageable pageable) {
-        List<CategoryDto> list = categoryService.findAll(pageable);
-        return ResponseEntity.ok(list);
+    public ResponseEntity<Page<CategoryDto>> getAll(Pageable pageable) {
+        Page<CategoryDto> page = categoryService.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/{id}")
@@ -66,10 +66,11 @@ public class CategoryController {
 
     @GetMapping("/{id}/books")
     @Operation(summary = "Get books by category")
-    public ResponseEntity<List<BookDtoWithoutCategoryIds>> getBooksByCategoryId(
+    public ResponseEntity<Page<BookDtoWithoutCategoryIds>> getBooksByCategoryId(
             @PathVariable Long id,
             Pageable pageable
     ) {
-        return ResponseEntity.ok(categoryService.getBooksByCategoryId(id, pageable));
+        Page<BookDtoWithoutCategoryIds> page = categoryService.getBooksByCategoryId(id, pageable);
+        return ResponseEntity.ok(page);
     }
 }

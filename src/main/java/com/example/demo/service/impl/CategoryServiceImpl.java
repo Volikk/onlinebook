@@ -9,9 +9,8 @@ import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.service.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +23,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final BookMapper bookMapper;
 
     @Override
-    public List<CategoryDto> findAll(Pageable pageable) {
+    public Page<CategoryDto> findAll(Pageable pageable) {
         return categoryRepository.findAll(pageable)
-                .stream()
-                .map(categoryMapper::toDto)
-                .collect(Collectors.toList());
+                .map(categoryMapper::toDto);
     }
 
     @Override
@@ -51,23 +48,23 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
         category.setName(categoryDto.getName());
         category.setDescription(categoryDto.getDescription());
-        Category saved = categoryRepository.save(category);
-        return categoryMapper.toDto(saved);
+        categoryRepository.save(category);
+        return categoryMapper.toDto(category);
     }
 
     @Override
     public void deleteById(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-        category.setDeleted(true); // ✅ soft delete
+        if (!categoryRepository.existsById(id)) {
+            throw new EntityNotFoundException("Category not found with id: " + id);
+        }
+        Category category = categoryRepository.getReferenceById(id);
+        category.setDeleted(true);
         categoryRepository.save(category);
     }
 
     @Override
-    public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(Long id, Pageable pageable) {
+    public Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(Long id, Pageable pageable) {
         return bookRepository.findAllByCategoriesId(id, pageable)
-                .stream()
-                .map(bookMapper::toDtoWithoutCategories)
-                .collect(Collectors.toList());
+                .map(bookMapper::toDtoWithoutCategories);
     }
 }
