@@ -18,20 +18,21 @@ databaseChangeLog:
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: description
                   type: TEXT
               - column:
-                  name: deleted
+                  name: is_deleted
                   type: BOOLEAN
                   defaultValueBoolean: false
 
   - changeSet:
-      id: create-book-category-table
+      id: create-books-categories-table
       author: you
       changes:
         - createTable:
-            tableName: book_category
+            tableName: books_categories
             columns:
               - column:
                   name: book_id
@@ -44,21 +45,21 @@ databaseChangeLog:
                   constraints:
                     nullable: false
 
+        - addPrimaryKey:
+            tableName: books_categories
+            columnNames: book_id, category_id
+            constraintName: pk_books_categories
+
         - addForeignKeyConstraint:
-            baseTableName: book_category
+            baseTableName: books_categories
             baseColumnNames: book_id
             referencedTableName: books
             referencedColumnNames: id
-            constraintName: fk_book_category_book
+            constraintName: fk_books_categories_book
 
         - addForeignKeyConstraint:
-            baseTableName: book_category
+            baseTableName: books_categories
             baseColumnNames: category_id
             referencedTableName: categories
             referencedColumnNames: id
-            constraintName: fk_book_category_category
-
-        - addPrimaryKey:
-            tableName: book_category
-            columnNames: book_id,category_id
-            constraintName: pk_book_category
+            constraintName: fk_books_categories_category
