@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: create-shopping-cart
-      author: your_name
+      id: 08-create-shopping-cart
+      author: Volikkk
       changes:
         - createTable:
             tableName: shopping_cart
@@ -13,12 +13,14 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
+
               - column:
                   name: user_id
                   type: BIGINT
                   constraints:
                     nullable: false
                     unique: true
+
               - column:
                   name: deleted
                   type: BOOLEAN
@@ -32,3 +34,4 @@ databaseChangeLog:
             referencedTableName: users
             referencedColumnNames: id
             constraintName: fk_shopping_cart_user
+            onDelete: CASCADE

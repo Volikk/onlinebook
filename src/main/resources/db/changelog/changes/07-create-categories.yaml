@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: create-categories-table
-      author: you
+      id: 07-create-categories
+      author: Volikkk
       changes:
         - createTable:
             tableName: categories
@@ -12,7 +12,6 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-                    nullable: false
               - column:
                   name: name
                   type: VARCHAR(255)
@@ -26,11 +25,6 @@ databaseChangeLog:
                   name: is_deleted
                   type: BOOLEAN
                   defaultValueBoolean: false
-
-  - changeSet:
-      id: create-books-categories-table
-      author: you
-      changes:
         - createTable:
             tableName: books_categories
             columns:
@@ -44,19 +38,16 @@ databaseChangeLog:
                   type: BIGINT
                   constraints:
                     nullable: false
-
         - addPrimaryKey:
             tableName: books_categories
             columnNames: book_id, category_id
             constraintName: pk_books_categories
-
         - addForeignKeyConstraint:
             baseTableName: books_categories
             baseColumnNames: book_id
             referencedTableName: books
             referencedColumnNames: id
             constraintName: fk_books_categories_book
-
         - addForeignKeyConstraint:
             baseTableName: books_categories
             baseColumnNames: category_id
