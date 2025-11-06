@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShoppingCartController {
     private final ShoppingCartService cartService;
 
-    @Operation(summary = "Отримати кошик користувача")
+    @Operation(summary = "Get user cart")
     @GetMapping
     public ShoppingCartResponseDto getCart(@AuthenticationPrincipal User user) {
         return cartService.getCartForUser(user.getId());
     }
 
-    @Operation(summary = "Додати книгу до кошика")
+    @Operation(summary = "Add book to cart")
     @PostMapping
     public ShoppingCartResponseDto addBook(
             @AuthenticationPrincipal User user,
@@ -38,7 +38,7 @@ public class ShoppingCartController {
         return cartService.addBookToCart(user.getId(), request);
     }
 
-    @Operation(summary = "Оновити кількість книги в кошику")
+    @Operation(summary = "Update the number of books in the cart")
     @PutMapping("/items/{cartItemId}")
     public ShoppingCartResponseDto updateItem(
             @AuthenticationPrincipal User user,
@@ -47,7 +47,7 @@ public class ShoppingCartController {
         return cartService.updateCartItem(user.getId(), cartItemId, request);
     }
 
-    @Operation(summary = "Видалити книгу з кошика")
+    @Operation(summary = "Remove book from cart")
     @DeleteMapping("/items/{cartItemId}")
     public void deleteItem(
             @AuthenticationPrincipal User user,
