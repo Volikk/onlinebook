@@ -1,23 +1,17 @@
 databaseChangeLog:
   - changeSet:
-      id: 04-insert-roles
+      id: 05-insert-roles
       author: Volikkk
       changes:
         - insert:
             tableName: roles
             columns:
               - column:
-                  name: id
-                  valueNumeric: 1
-              - column:
                   name: name
-                  value: ROLE_ADMIN
+                  value: ROLE_USER
         - insert:
             tableName: roles
             columns:
               - column:
-                  name: id
-                  valueNumeric: 2
-              - column:
                   name: name
-                  value: ROLE_USER
+                  value: ROLE_ADMIN
