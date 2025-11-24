@@ -34,3 +34,11 @@ databaseChangeLog:
   - include:
       file: changes/09-create-cart-item.yaml
       relativeToChangelogFile: true
+
+  - include:
+      file: changes/10-create-orders-table.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/11-create-order-items-table.yaml
+      relativeToChangelogFile: true
