@@ -7,6 +7,7 @@ import com.example.demo.dto.order.UpdateOrderStatusRequestDto;
 import com.example.demo.entity.User;
 import com.example.demo.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +25,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Order Management", description = "Endpoints for managing orders")
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/orders")
 @RequiredArgsConstructor
 public class OrderController {
-
     private final OrderService orderService;
 
-    @Operation(summary = "Place an order")
+    @Operation(summary = "Place an order", description = "Create a new order from shopping cart")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('USER')")
@@ -41,7 +42,8 @@ public class OrderController {
         return orderService.placeOrder(user.getId(), request);
     }
 
-    @Operation(summary = "Get orders for current user")
+    @Operation(summary = "Get orders for current user",
+            description = "Retrieve order history for user")
     @GetMapping
     @PreAuthorize("hasRole('USER')")
     public Page<OrderResponseDto> getOrders(
@@ -50,16 +52,8 @@ public class OrderController {
         return orderService.getOrdersForUser(user.getId(), pageable);
     }
 
-    @Operation(summary = "Get single order")
-    @GetMapping("/{orderId}")
-    @PreAuthorize("hasRole('USER')")
-    public OrderResponseDto getOrder(
-            @AuthenticationPrincipal User user,
-            @PathVariable Long orderId) {
-        return orderService.getOrderById(user.getId(), orderId);
-    }
-
-    @Operation(summary = "Update order status (admin)")
+    @Operation(summary = "Update order status",
+            description = "Admin only endpoint to change order status")
     @PatchMapping("/{orderId}")
     @PreAuthorize("hasRole('ADMIN')")
     public OrderResponseDto updateStatus(
@@ -68,7 +62,8 @@ public class OrderController {
         return orderService.updateOrderStatus(orderId, request);
     }
 
-    @Operation(summary = "Get items for an order")
+    @Operation(summary = "Get items for an order",
+            description = "Retrieve all items within a specific order")
     @GetMapping("/{orderId}/items")
     @PreAuthorize("hasRole('USER')")
     public List<OrderItemResponseDto> getOrderItems(
@@ -77,7 +72,8 @@ public class OrderController {
         return orderService.getOrderItems(user.getId(), orderId);
     }
 
-    @Operation(summary = "Get a specific item from an order")
+    @Operation(summary = "Get a specific item from an order",
+            description = "Retrieve details of a single order item")
     @GetMapping("/{orderId}/items/{itemId}")
     @PreAuthorize("hasRole('USER')")
     public OrderItemResponseDto getOrderItem(

@@ -4,6 +4,7 @@ import com.example.demo.dto.cart.AddCartItemRequestDto;
 import com.example.demo.dto.cart.CartItemResponseDto;
 import com.example.demo.dto.cart.ShoppingCartResponseDto;
 import com.example.demo.dto.cart.UpdateCartItemRequestDto;
+import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.model.Book;
 import com.example.demo.model.CartItem;
 import com.example.demo.model.ShoppingCart;
@@ -25,19 +26,19 @@ public class ShoppingCartService {
     @Transactional(readOnly = true)
     public ShoppingCartResponseDto getCartForUser(Long userId) {
         ShoppingCart cart = cartRepository.findByUserIdWithItemsAndBooks(userId)
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         "Cart not found for user " + userId));
         return mapToResponse(cart);
     }
 
     @Transactional
     public ShoppingCartResponseDto addBookToCart(Long userId, AddCartItemRequestDto req) {
-        ShoppingCart cart = cartRepository.findByUserIdAndDeletedFalse(userId)
-                .orElseThrow(() -> new IllegalArgumentException(
+        ShoppingCart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException(
                         "Cart not found for user " + userId));
 
         Book book = bookRepository.findById(req.getBookId())
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         "Book not found: " + req.getBookId()));
 
         CartItem item = cartItemRepository.findByShoppingCartIdAndBookId(cart.getId(), book.getId())
@@ -60,7 +61,7 @@ public class ShoppingCartService {
                                                   Long cartItemId,
                                                   UpdateCartItemRequestDto req) {
         CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         "Cart item not found: " + cartItemId));
 
         if (!item.getShoppingCart().getUser().getId().equals(userId)) {
@@ -75,7 +76,7 @@ public class ShoppingCartService {
     @Transactional
     public void removeCartItem(Long userId, Long cartItemId) {
         CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         "Cart item not found: " + cartItemId));
 
         if (!item.getShoppingCart().getUser().getId().equals(userId)) {
@@ -83,6 +84,12 @@ public class ShoppingCartService {
         }
 
         cartItemRepository.delete(item);
+    }
+
+    @Transactional
+    public void clear(ShoppingCart cart) {
+        cartItemRepository.deleteAll(cart.getCartItems());
+        cart.getCartItems().clear();
     }
 
     private ShoppingCartResponseDto mapToResponse(ShoppingCart cart) {
@@ -104,4 +111,3 @@ public class ShoppingCartService {
         return r;
     }
 }
-

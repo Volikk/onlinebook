@@ -6,12 +6,13 @@ import com.example.demo.dto.order.OrderResponseDto;
 import com.example.demo.dto.order.UpdateOrderStatusRequestDto;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.enums.OrderStatus;
+import com.example.demo.exception.EntityNotFoundException;
+import com.example.demo.exception.OrderProcessingException;
+import com.example.demo.mapper.OrderItemMapper;
 import com.example.demo.mapper.OrderMapper;
-import com.example.demo.model.Book;
 import com.example.demo.model.CartItem;
 import com.example.demo.model.OrderItem;
 import com.example.demo.model.ShoppingCart;
-import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.CartItemRepository;
 import com.example.demo.repository.OrderItemRepository;
 import com.example.demo.repository.OrderRepository;
@@ -20,6 +21,7 @@ import com.example.demo.service.OrderService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,103 +35,95 @@ public class OrderServiceImpl implements OrderService {
 
     private final ShoppingCartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final BookRepository bookRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
-    private final OrderMapper mapper;
+    private final OrderMapper orderMapper;
+    private final OrderItemMapper orderItemMapper;
 
     @Transactional
     @Override
-    public OrderResponseDto placeOrder(Long userId, CreateOrderRequestDto req) {
-        ShoppingCart cart = cartRepository.findByUserIdAndDeletedFalse(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Cart not found for user "
-                        + userId));
+    public OrderResponseDto placeOrder(Long userId, CreateOrderRequestDto requestDto) {
+        ShoppingCart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Can't find shopping cart for user with id: " + userId)
+                );
 
-        List<CartItem> items = cartItemRepository.findByShoppingCartId(cart.getId());
-        if (items.isEmpty()) {
-            throw new IllegalStateException("Cart is empty");
+        Set<CartItem> cartItems = cart.getCartItems();
+        if (cartItems.isEmpty()) {
+            throw new OrderProcessingException(
+                    "Can't place order: shopping cart is empty for user with id: " + userId)
+                    ;
         }
 
         Order order = new Order();
         order.setUser(cart.getUser());
         order.setStatus(OrderStatus.PENDING);
         order.setOrderDate(LocalDateTime.now());
-        order.setShippingAddress(req.getShippingAddress());
+        order.setShippingAddress(requestDto.getShippingAddress());
 
         BigDecimal total = BigDecimal.ZERO;
+        for (CartItem item : cartItems) {
+            OrderItem orderItem = orderItemMapper.toEntity(item);
+            orderItem.setOrder(order);
+            orderItem.setPrice(item.getBook().getPrice());
 
-        for (CartItem ci : items) {
-            Book book = ci.getBook();
-            OrderItem oi = new OrderItem();
-            oi.setOrder(order);
-            oi.setBook(book);
-            oi.setQuantity(ci.getQuantity());
-            oi.setPrice(book.getPrice());
-            order.getOrderItems().add(oi);
-            total = total.add(book.getPrice().multiply(BigDecimal.valueOf(ci.getQuantity())));
+            order.getOrderItems().add(orderItem);
+
+            BigDecimal itemTotal = item.getBook().getPrice()
+                    .multiply(BigDecimal.valueOf(item.getQuantity()));
+            total = total.add(itemTotal);
         }
 
         order.setTotal(total);
-        order = orderRepository.save(order);
+        orderRepository.save(order);
 
-        cartItemRepository.deleteAll(items);
+        cartItemRepository.deleteAll(cartItems);
 
-        return mapper.toDto(order);
+        return orderMapper.toDto(order);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<OrderResponseDto> getOrdersForUser(Long userId, Pageable pageable) {
-        Page<Order> page = orderRepository.findAllByUserIdAndDeletedFalse(userId, pageable);
-        return page.map(mapper::toDto);
+        return orderRepository.findAllByUserId(userId, pageable)
+                .map(orderMapper::toDto);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
-    public OrderResponseDto getOrderById(Long userId, Long orderId) {
-        Order order = orderRepository.findByIdAndDeletedFalse(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
-        if (!order.getUser().getId().equals(userId)) {
-            throw new SecurityException("You cannot view another user's order");
-        }
-        return mapper.toDto(order);
+    public OrderResponseDto updateOrderStatus(
+            Long orderId, UpdateOrderStatusRequestDto requestDto
+    ) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Can't find order by id: " + orderId
+                ));
+
+        order.setStatus(requestDto.getStatus());
+        return orderMapper.toDto(orderRepository.save(order));
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<OrderItemResponseDto> getOrderItems(Long userId, Long orderId) {
-        Order order = orderRepository.findByIdAndDeletedFalse(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
-        if (!order.getUser().getId().equals(userId)) {
-            throw new SecurityException("You cannot view another user's order items");
-        }
+        Order order = orderRepository.findByIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Can't find order by id: " + orderId + " for user with id: " + userId
+                ));
+
         return order.getOrderItems().stream()
-                .filter(oi -> !oi.isDeleted())
-                .map(mapper::toItemDto)
+                .map(orderItemMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     @Override
     public OrderItemResponseDto getOrderItem(Long userId, Long orderId, Long itemId) {
-        orderRepository.findByIdAndDeletedFalse(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
-        var itemOpt = orderItemRepository.findByIdAndOrderIdAndDeletedFalse(itemId, orderId);
-        var item = itemOpt.orElseThrow(() -> new IllegalArgumentException("Order item not found: "
-                + itemId));
-        if (!item.getOrder().getUser().getId().equals(userId)) {
-            throw new SecurityException("You cannot view another user's order item");
-        }
-        return mapper.toItemDto(item);
-    }
-
-    @Transactional
-    @Override
-    public OrderResponseDto updateOrderStatus(Long orderId, UpdateOrderStatusRequestDto req) {
-        Order order = orderRepository.findByIdAndDeletedFalse(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
-        order.setStatus(req.getStatus());
-        order = orderRepository.save(order);
-        return mapper.toDto(order);
+        return orderItemRepository.findByIdAndOrderIdAndOrderUserId(itemId, orderId, userId)
+                .map(orderItemMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Can't find order item by id: " + itemId
+                                + " in order with id: " + orderId + " for user with id: " + userId)
+                );
     }
 }
