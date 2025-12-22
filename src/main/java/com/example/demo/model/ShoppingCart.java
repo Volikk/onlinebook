@@ -15,9 +15,13 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "shopping_carts")
+@SQLDelete(sql = "UPDATE shopping_carts SET deleted = true WHERE id=?")
+@Where(clause = "deleted=false")
 @Getter
 @Setter
 public class ShoppingCart {
@@ -34,5 +38,4 @@ public class ShoppingCart {
 
     @Column(nullable = false)
     private boolean deleted = false;
-
 }
