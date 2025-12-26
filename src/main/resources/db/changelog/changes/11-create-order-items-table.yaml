@@ -39,7 +39,7 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: deleted
+                  name: is_deleted
                   type: BOOLEAN
                   defaultValueBoolean: false
                   constraints:

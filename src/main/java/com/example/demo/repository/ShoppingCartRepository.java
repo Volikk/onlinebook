@@ -13,6 +13,6 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long
     @Query("SELECT sc FROM ShoppingCart sc "
             + "LEFT JOIN FETCH sc.cartItems ci "
             + "LEFT JOIN FETCH ci.book b "
-            + "WHERE sc.user.id = :userId AND sc.deleted = false")
+            + "WHERE sc.user.id = :userId AND sc.isDeleted = false")
     Optional<ShoppingCart> findByUserIdWithItemsAndBooks(@Param("userId") Long userId);
 }
