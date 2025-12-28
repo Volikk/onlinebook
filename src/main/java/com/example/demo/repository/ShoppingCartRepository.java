@@ -8,12 +8,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long> {
 
-    Optional<ShoppingCart> findByUserIdAndDeletedFalse(Long userId);
+    Optional<ShoppingCart> findByUserId(Long userId);
 
     @Query("SELECT sc FROM ShoppingCart sc "
             + "LEFT JOIN FETCH sc.cartItems ci "
             + "LEFT JOIN FETCH ci.book b "
-            + "WHERE sc.user.id = :userId AND sc.deleted = false")
+            + "WHERE sc.user.id = :userId AND sc.isDeleted = false")
     Optional<ShoppingCart> findByUserIdWithItemsAndBooks(@Param("userId") Long userId);
 }
-
