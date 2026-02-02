@@ -1,4 +1,4 @@
-package com.example.demo.entity.enums;
+package com.example.demo.model.enums;
 
 public enum OrderStatus {
     PENDING,

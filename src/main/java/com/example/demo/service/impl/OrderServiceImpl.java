@@ -5,7 +5,7 @@ import com.example.demo.dto.order.OrderItemResponseDto;
 import com.example.demo.dto.order.OrderResponseDto;
 import com.example.demo.dto.order.UpdateOrderStatusRequestDto;
 import com.example.demo.entity.Order;
-import com.example.demo.entity.enums.OrderStatus;
+import com.example.demo.model.enums.OrderStatus;
 import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.exception.OrderProcessingException;
 import com.example.demo.mapper.OrderItemMapper;

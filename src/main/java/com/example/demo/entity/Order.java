@@ -1,6 +1,6 @@
 package com.example.demo.entity;
 
-import com.example.demo.entity.enums.OrderStatus;
+import com.example.demo.model.enums.OrderStatus;
 import com.example.demo.model.OrderItem;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
