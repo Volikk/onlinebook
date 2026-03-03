@@ -4,7 +4,7 @@ databaseChangeLog:
       author: Volikkk
       changes:
         - createTable:
-            tableName: cart_item
+            tableName: cart_items
             columns:
               - column:
                   name: id
@@ -13,19 +13,16 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-
               - column:
                   name: shopping_cart_id
                   type: BIGINT
                   constraints:
                     nullable: false
-
               - column:
                   name: book_id
                   type: BIGINT
                   constraints:
                     nullable: false
-
               - column:
                   name: quantity
                   type: INT
@@ -33,7 +30,7 @@ databaseChangeLog:
                     nullable: false
 
         - addForeignKeyConstraint:
-            baseTableName: cart_item
+            baseTableName: cart_items  # ВИПРАВЛЕНО
             baseColumnNames: shopping_cart_id
             referencedTableName: shopping_cart
             referencedColumnNames: id
@@ -41,7 +38,7 @@ databaseChangeLog:
             onDelete: CASCADE
 
         - addForeignKeyConstraint:
-            baseTableName: cart_item
+            baseTableName: cart_items  # ВИПРАВЛЕНО
             baseColumnNames: book_id
             referencedTableName: books
             referencedColumnNames: id
