@@ -7,14 +7,13 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @Configuration
 public class OpenApiConfig {
     static {
         SpringDocUtils.getConfig().addAnnotationsToIgnore(
-            org.springframework.security.core.annotation.AuthenticationPrincipal.class
-    );
+                org.springframework.security.core.annotation.AuthenticationPrincipal.class
+        );
         SpringDocUtils.getConfig().addRequestWrapperToIgnore(
                 com.example.demo.entity.User.class
         );
@@ -24,7 +23,7 @@ public class OpenApiConfig {
     }
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public OpenAPI customOpenApi() {
         return new OpenAPI()
                 .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
                 .components(new Components()
