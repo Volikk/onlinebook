@@ -10,6 +10,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfig {
+    private static final String SECURITY_SCHEME_NAME = "BearerAuth";
+    private static final String SCHEME = "bearer";
+    private static final String BEARER_FORMAT = "JWT";
+
     static {
         SpringDocUtils.getConfig().addAnnotationsToIgnore(
                 org.springframework.security.core.annotation.AuthenticationPrincipal.class
@@ -25,12 +29,12 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenApi() {
         return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
+                .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .components(new Components()
-                        .addSecuritySchemes("BearerAuth", new SecurityScheme()
-                                .name("BearerAuth")
+                        .addSecuritySchemes(SECURITY_SCHEME_NAME, new SecurityScheme()
+                                .name(SECURITY_SCHEME_NAME)
                                 .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")));
+                                .scheme(SCHEME)
+                                .bearerFormat(BEARER_FORMAT)));
     }
 }

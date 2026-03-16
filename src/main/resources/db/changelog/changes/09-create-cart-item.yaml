@@ -30,7 +30,7 @@ databaseChangeLog:
                     nullable: false
 
         - addForeignKeyConstraint:
-            baseTableName: cart_items  # ВИПРАВЛЕНО
+            baseTableName: cart_items
             baseColumnNames: shopping_cart_id
             referencedTableName: shopping_cart
             referencedColumnNames: id
@@ -38,7 +38,7 @@ databaseChangeLog:
             onDelete: CASCADE
 
         - addForeignKeyConstraint:
-            baseTableName: cart_items  # ВИПРАВЛЕНО
+            baseTableName: cart_items
             baseColumnNames: book_id
             referencedTableName: books
             referencedColumnNames: id

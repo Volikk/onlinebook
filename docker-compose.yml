@@ -21,6 +21,7 @@ services:
         condition: service_healthy
     env_file: .env
     ports:
-      - "8080:8080"
+      - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
+      - $DEBUG_PORT:$DEBUG_PORT
     environment:
       - MYSQLDB_HOST=mysqldb
