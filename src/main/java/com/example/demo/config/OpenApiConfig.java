@@ -15,9 +15,7 @@ public class OpenApiConfig {
     private static final String BEARER_FORMAT = "JWT";
 
     static {
-        SpringDocUtils.getConfig().addAnnotationsToIgnore(
-                org.springframework.security.core.annotation.AuthenticationPrincipal.class
-        );
+
         SpringDocUtils.getConfig().addRequestWrapperToIgnore(
                 com.example.demo.entity.User.class
         );
