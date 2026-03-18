@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment Variables ###
+.env
+!.env.sample
+!.env.template
+
+### Docker ###
+
+.docker/

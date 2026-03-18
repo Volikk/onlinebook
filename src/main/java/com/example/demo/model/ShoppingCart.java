@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +21,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "shopping_carts")
-@SQLDelete(sql = "UPDATE order_items SET is_deleted = true WHERE id=?")
+@SQLDelete(sql = "UPDATE shopping_carts SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted = false")
 @Getter
 @Setter
@@ -33,6 +34,7 @@ public class ShoppingCart {
     @JoinColumn(name = "user_id", nullable = false)
     private com.example.demo.entity.User user;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> cartItems = new HashSet<>();
 
